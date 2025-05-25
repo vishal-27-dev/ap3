@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isCuratedHovering = false;
     let isCuratedManuallyScrolling = false; // To detect user's manual scroll
     let manualScrollTimeout;
-    const SCROLL_SPEED_PIXELS_PER_SECOND = 60; // Adjust for desired speed (e.g., 50px/sec)
+    const SCROLL_SPEED_PIXELS_PER_SECOND = 1024; // Adjust for desired speed (e.g., 50px/sec)
     let lastFrameTime = 0;
 
     function curatedAutoScrollStep(timestamp) {
