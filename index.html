@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vis Recommendations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container"> <!-- For CSS Grid layout -->
+
+        <header>
+            <h1>Vis Recommendations</h1>
+        </header>
+
+        <!-- Task: Image Carousel Section -->
+        <section id="image-carousel-section" class="content-block">
+            <h2>Featured Highlights</h2>
+            <div class="carousel-container">
+                <div class="carousel-slides">
+                    <!-- Slides will be injected by JavaScript -->
+                </div>
+                <button class="carousel-btn prev-btn" aria-label="Previous slide">❮</button>
+                <button class="carousel-btn next-btn" aria-label="Next slide">❯</button>
+                <div class="carousel-dots">
+                    <!-- Dots will be injected by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Wrapper for Horizontal Scrolling (Dynamic Recommendations) -->
+        <div class="scroll-wrapper">
+            <main id="recommendationContainer" class="recommendation-container scrollable">
+                <!-- Movie/Show recommendations will be loaded here by JavaScript from an API -->
+                <p class="loading-message">Loading recommendations...</p>
+            </main>
+        </div>
+
+        <!-- Task 2: Contact Form Section -->
+        <section id="contact-section" class="content-block">
+            <h2>Contact Us</h2>
+            <form id="contactForm" novalidate>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <small class="error-message"></small>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <small class="error-message"></small>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject">
+                    <small class="error-message"></small>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                    <small class="error-message"></small>
+                </div>
+                <button type="submit" class="form-submit-btn">Send Message</button>
+            </form>
+            <p id="formSuccessMessage" class="success-message" style="display:none;"></p>
+        </section>
+
+        <!-- Task 2: Dynamic To-Do List Section -->
+        <section id="todo-section" class="content-block">
+            <h2>My To-Do List</h2>
+            <div class="todo-input-area">
+                <input type="text" id="todoInput" placeholder="Add a new task..." aria-label="New task input">
+                <button id="addTodoButton" type="button">Add Task</button>
+            </div>
+            <ul id="todoList">
+                <!-- Tasks will be added here by JavaScript -->
+            </ul>
+        </section>
+
+        <footer>
+            <p>© 2025 Vis Recommendations - Your Source for Bollywood Hits. Designed by <a href="https://github.com/vishal-27-dev">Vishal-Kumar-Rajak</a></p>
+        </footer>
+    </div> <!-- end of .page-container -->
+
+    <script src="script.js"></script>
+</body>
+</html>
