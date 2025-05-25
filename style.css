@@ -5,68 +5,134 @@
     box-sizing: border-box;
 }
 
+/* Theme Variables */
+:root {
+    --bg-color: #000000;
+    --text-color: #e0e0e0;
+    --text-muted-color: #ababab;
+    --card-bg-color: #141414;
+    --card-detail-bg-color: #181818;
+    --content-block-bg-color: #0f0f0f;
+    --input-bg-color: #333;
+    --border-color: #222;
+    --border-strong-color: #555;
+    --primary-accent-color: #E50914; /* Netflix Red */
+    --primary-accent-hover-color: #f40612;
+    --star-color: #f5c518;
+    --success-color: #4CAF50;
+    --error-color: #ff4d4d;
+    --header-height: 80px; /* Approximate */
+    --font-family: 'Roboto', sans-serif;
+}
+
+[data-theme="light"] {
+    --bg-color: #f4f4f4;
+    --text-color: #333333;
+    --text-muted-color: #555555;
+    --card-bg-color: #ffffff;
+    --card-detail-bg-color: #f9f9f9;
+    --content-block-bg-color: #ffffff;
+    --input-bg-color: #e9e9e9;
+    --border-color: #dddddd;
+    --border-strong-color: #cccccc;
+    /* Accent colors can remain the same or be adjusted */
+}
+
+
 /* Body Styling */
 body {
-    background-color: #000000; /* Pitch Black */
-    color: #e0e0e0; /* Light grey text */
-    font-family: 'Roboto', sans-serif; /* Modern Font */
-    line-height: 1.5;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* Page Container using CSS Grid */
 .page-container {
     display: grid;
-    grid-template-columns: 1fr; /* Default to single column */
-    grid-template-rows: auto auto auto auto auto 1fr auto; /* Header, Carousel, Recommendations, Contact, ToDo, Filler, Footer */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto 1fr auto;
     grid-template-areas:
         "header"
         "carousel"
-        "recommendations"
+        "recommendations-wrapper" /* New area for title + scroll-wrapper */
         "contact"
         "todo"
-        "filler" /* Filler for pushing footer down */
+        "filler"
         "footer";
     min-height: 100vh;
     gap: 30px 0;
 }
-.page-container > *:last-child { /* Footer styling moved to footer selector */
-    grid-area: footer;
+
+/* Assigning areas */
+header { grid-area: header; text-align: center; padding: 20px 20px 0 20px; display: flex; justify-content: space-between; align-items: center;}
+.header-controls { margin-right: 20px;}
+#themeToggleBtn {
+    background: none;
+    border: 1px solid var(--border-strong-color);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.2s, color 0.2s;
+}
+#themeToggleBtn:hover {
+    background-color: var(--primary-accent-color);
+    color: #fff;
+    border-color: var(--primary-accent-color);
 }
 
 
-/* Assigning areas */
-header { grid-area: header; text-align: center; padding: 40px 20px 0 20px; }
 #image-carousel-section { grid-area: carousel; }
-.scroll-wrapper { grid-area: recommendations; padding: 0 40px; }
+.scroll-wrapper {
+    grid-area: recommendations-wrapper;
+    padding: 0 40px;
+}
+.scroll-wrapper h2 { /* Title for the scrollable recommendations */
+    font-size: 1.8em;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    padding-left: 0; /* Align with cards if container has padding */
+    text-align: left;
+}
+
+
 #contact-section { grid-area: contact; }
 #todo-section { grid-area: todo; }
-/* Filler area automatically takes up space */
-footer { grid-area: footer; padding-top: 30px; margin-top: auto; /* Pushes footer down in grid area */}
+footer { grid-area: footer; padding-top: 30px; margin-top: auto; }
 
 
 header h1 {
-    font-size: 3.8em;
-    color: #ffffff;
+    font-size: 3em;
+    color: var(--text-color);
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     margin: 0;
+    flex-grow: 1; /* Allows title to take space pushing toggle button to right*/
+    text-align: center; /* Keep title centered despite flex */
+    padding-left: 60px; /* Offset for the button width if it was on left */
 }
 
+
 /* --- Image Carousel Styling --- */
-#image-carousel-section {
-    /* Using .content-block for base styling, carousel-specific below */
+#image-carousel-section .content-block h2 { /* Target H2 specifically in this section */
+    margin-bottom: 20px;
 }
 .carousel-container {
     position: relative;
-    max-width: 800px; /* Max width of carousel itself */
+    max-width: 800px;
     margin: 0 auto;
     overflow: hidden;
     border-radius: 8px;
-    background-color: #111; /* Background for the container */
+    background-color: var(--card-detail-bg-color);
+    min-height: 300px; /* For loading state */
 }
 .carousel-slides {
     display: flex;
     transition: transform 0.5s ease-in-out;
+    min-height: inherit; /* For loading state */
 }
 .carousel-slide {
     min-width: 100%;
@@ -74,10 +140,10 @@ header h1 {
 }
 .carousel-slide img {
     width: 100%;
-    height: 450px; /* Adjust as needed */
-    object-fit: cover; /* Or 'contain' if you prefer */
+    height: 450px;
+    object-fit: cover;
     display: block;
-    border-radius: 8px; /* if slides have individual backgrounds/borders */
+    border-radius: 8px;
 }
 .carousel-btn {
     position: absolute;
@@ -95,14 +161,11 @@ header h1 {
     transition: background-color 0.2s ease;
 }
 .carousel-btn:hover {
-    background-color: rgba(229, 9, 20, 0.8); /* Netflix Red */
+    background-color: rgba(229, 9, 20, 0.8);
 }
-.carousel-btn.prev-btn {
-    left: 15px;
-}
-.carousel-btn.next-btn {
-    right: 15px;
-}
+.carousel-btn.prev-btn { left: 15px; }
+.carousel-btn.next-btn { right: 15px; }
+
 .carousel-dots {
     text-align: center;
     padding: 10px 0;
@@ -122,34 +185,39 @@ header h1 {
     display: inline-block;
     transition: background-color 0.3s ease;
 }
+[data-theme="light"] .carousel-dot {
+    background-color: rgba(0, 0, 0, 0.3);
+}
 .carousel-dot.active,
 .carousel-dot:hover {
-    background-color: #E50914; /* Netflix Red */
+    background-color: var(--primary-accent-color);
 }
 
-
-/* Recommendation Container - The Actual Scrolling Flexbox */
+/* Recommendation Container */
 .recommendation-container.scrollable {
-    display: flex; /* Enable Flexbox */
+    display: flex;
     overflow-x: auto;
-    padding-bottom: 20px;
+    padding-bottom: 20px; /* Space for scrollbar if visible, though hidden */
     -ms-overflow-style: none;
     scrollbar-width: none;
-    min-height: 450px; /* Ensure it has some height while loading */
+    min-height: 450px;
+    background-color: transparent; /* Inherits from scroll-wrapper or page */
 }
-.recommendation-container.scrollable::-webkit-scrollbar {
-    display: none;
-}
-.loading-message {
-    color: #aaa;
+.recommendation-container.scrollable::-webkit-scrollbar { display: none; }
+
+.api-message { /* For API loading/error messages inside recommendation container */
+    color: var(--text-muted-color);
     font-style: italic;
-    margin: auto; /* Center loading message */
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
 }
 
 
-/* Individual Recommendation Card Styling (used by dynamic cards) */
+/* Recommendation Card Styling */
 .recommendation-card {
-    background-color: #141414;
+    background-color: var(--card-bg-color);
     border-radius: 8px;
     overflow: hidden;
     width: 240px;
@@ -158,35 +226,36 @@ header h1 {
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #222;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
-.recommendation-card:last-child {
-    margin-right: 0;
+[data-theme="dark"] .recommendation-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-
+.recommendation-card:last-child { margin-right: 0; }
 .recommendation-card:hover {
     transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(0,0,0, 0.15);
+}
+[data-theme="dark"] .recommendation-card:hover {
     box-shadow: 0 10px 25px rgba(255, 255, 255, 0.08);
 }
-
 .recommendation-card img {
     width: 100%;
     height: 360px;
     object-fit: cover;
     display: block;
+    background-color: #333; /* Placeholder while image loads */
 }
-
 .movie-details {
     padding: 15px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    background-color: #181818;
+    background-color: var(--card-detail-bg-color);
 }
-
 .movie-details h3 {
-    color: #ffffff;
+    color: var(--text-color);
     font-size: 1.15em;
     font-weight: 700;
     margin-bottom: 10px;
@@ -194,28 +263,24 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .rating-votes {
     display: flex;
     align-items: center;
     margin-bottom: 8px;
 }
-
 .rating-votes .rating {
-    color: #f5c518;
+    color: var(--star-color);
     font-weight: 700;
     font-size: 1em;
     margin-right: 8px;
 }
-
 .rating-votes .votes {
-    color: #ababab;
+    color: var(--text-muted-color);
     font-size: 0.8em;
 }
-
 .movie-details .metadata {
     font-size: 0.85em;
-    color: #ababab;
+    color: var(--text-muted-color);
     margin-top: auto;
     padding-top: 5px;
 }
@@ -223,29 +288,56 @@ header h1 {
 /* General Content Block Styling */
 .content-block {
     padding: 30px 40px;
-    background-color: #0f0f0f; /* Slightly lighter black */
-    margin: 0 auto; /* Centering and spacing for section blocks */
+    background-color: var(--content-block-bg-color);
+    margin: 0 auto;
     border-radius: 8px;
-    max-width: 90%; /* Allow content blocks to be wider */
+    max-width: 90%;
     width: calc(100% - 40px);
-    border: 1px solid #222; /* Subtle border for sections */
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
-/* Override max-width for specific content blocks that need more controlled width */
 #contact-section.content-block,
 #todo-section.content-block {
     max-width: 700px;
 }
 #image-carousel-section.content-block {
-    padding: 30px 20px; /* Less horizontal padding for carousel to use more width */
+    padding: 30px 20px;
+    max-width: 1000px; /* Allow carousel section to be wider */
 }
-
-
 .content-block h2 {
-    color: #ffffff;
+    color: var(--text-color);
     font-size: 2em;
     margin-bottom: 25px;
     text-align: center;
 }
+
+/* Spinner animation */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px; /* Ensure visibility */
+    width: 100%;
+    color: var(--text-muted-color);
+}
+.spinner-container.full-width-spinner {
+    min-height: 400px; /* Taller for main recommendations */
+}
+.spinner {
+    border: 5px solid var(--border-strong-color); /* Light grey */
+    border-top: 5px solid var(--primary-accent-color); /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 
 /* Contact Form Styling */
 #contactForm {
@@ -255,41 +347,34 @@ header h1 {
     margin: 0 auto;
     text-align: left;
 }
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
 .form-group label {
     margin-bottom: 6px;
-    color: #c7c7c7;
+    color: var(--text-color);
     font-weight: bold;
     font-size: 0.9em;
 }
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group textarea {
-    background-color: #333;
-    color: #e0e0e0;
-    border: 1px solid #555;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-strong-color);
     padding: 12px 15px;
     border-radius: 5px;
     font-size: 1em;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
     font-family: inherit;
 }
 .form-group input[type="text"]:focus,
 .form-group input[type="email"]:focus,
 .form-group textarea:focus {
-    border-color: #E50914;
+    border-color: var(--primary-accent-color);
     box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.4);
     outline: none;
 }
-.form-group textarea {
-    resize: vertical;
-    min-height: 100px;
-}
+.form-group textarea { resize: vertical; min-height: 100px; }
 .error-message {
-    color: #ff4d4d;
+    color: var(--error-color);
     font-size: 0.85em;
     margin-top: 4px;
     display: block;
@@ -297,12 +382,12 @@ header h1 {
 }
 .form-group input.input-error,
 .form-group textarea.input-error {
-    border-color: #ff4d4d !important;
+    border-color: var(--error-color) !important;
     box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.4);
 }
 .form-submit-btn, #addTodoButton {
     padding: 12px 30px;
-    background-color: #E50914;
+    background-color: var(--primary-accent-color);
     color: #ffffff;
     border: none;
     border-radius: 5px;
@@ -312,15 +397,13 @@ header h1 {
     transition: background-color 0.2s ease, transform 0.2s ease;
     align-self: center;
 }
-#contactForm .form-submit-btn {
-     margin-top: 10px;
-}
+#contactForm .form-submit-btn { margin-top: 10px; }
 .form-submit-btn:hover, #addTodoButton:hover {
-    background-color: #f40612;
+    background-color: var(--primary-accent-hover-color);
     transform: scale(1.03);
 }
 .success-message {
-    color: #4CAF50;
+    color: var(--success-color);
     background-color: rgba(76, 175, 80, 0.1);
     border: 1px solid rgba(76, 175, 80, 0.4);
     text-align: center;
@@ -331,63 +414,52 @@ header h1 {
 }
 
 /* To-Do List Styling */
-.todo-input-area {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    margin-left: auto;
-    margin-right: auto;
-}
+.todo-input-area { display: flex; gap: 10px; margin-bottom: 25px; margin-left: auto; margin-right: auto; }
 #todoInput {
     flex-grow: 1;
-    background-color: #333;
-    color: #e0e0e0;
-    border: 1px solid #555;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-strong-color);
     padding: 10px 15px;
     border-radius: 5px;
     font-size: 1em;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
-#todoInput:focus {
-    border-color: #E50914;
-    box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.4);
-    outline: none;
-}
-#addTodoButton {
-     flex-shrink: 0;
-}
-#todoList {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto;
-    text-align: left;
-}
+#todoInput:focus { border-color: var(--primary-accent-color); box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.4); outline: none;}
+#addTodoButton { flex-shrink: 0; }
+#todoList { list-style: none; padding: 0; margin: 0 auto; text-align: left; }
 #todoList li {
-    background-color: #222;
-    color: #d1d1d1;
+    background-color: var(--card-bg-color); /* Using card bg for consistency */
+    color: var(--text-muted-color);
     padding: 12px 15px;
     margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color 0.2s ease, opacity 0.3s ease;
-    border-left: 4px solid #555;
+    transition: background-color 0.2s ease, opacity 0.3s ease, border-left-color 0.3s, color 0.3s;
+    border-left: 4px solid var(--border-strong-color);
     cursor: pointer;
 }
 #todoList li:hover {
-    background-color: #2c2c2c;
-    border-left-color: #E50914;
+    background-color: var(--card-detail-bg-color); /* Slightly different on hover */
+    border-left-color: var(--primary-accent-color);
 }
 #todoList li.completed {
     text-decoration: line-through;
-    color: #777;
-    background-color: #1c1c1c;
+    color: #777; /* Muted fixed color */
+    background-color: #2a2a2a; /* Darker specific color for completed in dark mode */
     border-left-color: #444;
     opacity: 0.7;
 }
+[data-theme="light"] #todoList li.completed {
+    background-color: #e0e0e0;
+    border-left-color: #bbbbbb;
+    color: #888888;
+}
 .remove-todo-btn {
     background-color: transparent;
-    color: #999;
+    color: var(--text-muted-color);
     border: none;
     padding: 4px 8px;
     border-radius: 4px;
@@ -398,9 +470,8 @@ header h1 {
     transition: color 0.2s;
     font-weight: bold;
 }
-.remove-todo-btn:hover {
-    color: #f40612;
-}
+.remove-todo-btn:hover { color: var(--primary-accent-hover-color); }
+
 
 /* Footer Styling */
 footer {
@@ -408,130 +479,117 @@ footer {
     padding: 25px;
     color: #666;
     font-size: 0.9em;
-    border-top: 1px solid #1a1a1a;
+    border-top: 1px solid var(--border-color);
+    transition: border-color 0.3s, color 0.3s;
+}
+[data-theme="light"] footer {
+    color: #555;
 }
 footer a {
     color: #888;
     text-decoration: none;
+    transition: color 0.2s;
 }
-footer a:hover {
-    color: #aaa;
-    text-decoration: underline;
+[data-theme="light"] footer a {
+    color: #444;
 }
+footer a:hover { color: var(--primary-accent-color); text-decoration: underline; }
+
+/* Notification Panel Styling */
+.notification-panel {
+    position: fixed;
+    bottom: 20px;
+    right: -400px; /* Start off-screen */
+    width: 350px;
+    max-width: 90%;
+    background-color: var(--card-detail-bg-color);
+    color: var(--text-color);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: right 0.5s ease-in-out, background-color 0.3s, color 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.notification-panel.show {
+    right: 20px; /* Slide in */
+}
+.notification-panel p {
+    margin: 0;
+    flex-grow: 1;
+}
+.close-notification {
+    background: none;
+    border: none;
+    color: var(--text-muted-color);
+    font-size: 1.5em;
+    line-height: 1;
+    padding: 0 5px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close-notification:hover {
+    color: var(--primary-accent-color);
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 2.8em;
-    }
-    .scroll-wrapper {
-        padding: 0 20px;
-    }
-     .recommendation-card {
-        width: 200px;
-        margin-right: 15px;
-    }
-    .recommendation-card img {
-        height: 300px;
-    }
-     .movie-details h3 {
-        font-size: 1.05em;
-    }
-    .content-block {
-        padding: 25px 20px;
-        width: calc(100% - 30px); /* Adjust width calculation */
-    }
-     #image-carousel-section.content-block {
-        padding: 25px 10px;
-    }
-    .carousel-slide img {
-        height: 350px; /* Adjust carousel image height for tablets */
-    }
-    .carousel-btn {
-        padding: 8px 12px;
-        font-size: 1.2em;
-    }
-    .carousel-dot {
-        height: 10px;
-        width: 10px;
-    }
-    .content-block h2 {
-        font-size: 1.7em;
-    }
-    .todo-input-area {
-         flex-direction: column;
-         gap: 15px;
-     }
-    #addTodoButton {
-        align-self: stretch;
-    }
-    .page-container {
-        gap: 20px 0;
-    }
+    header h1 { font-size: 2.2em; padding-left: 0; }
+    .header-controls { margin-right: 10px;}
+    #themeToggleBtn { padding: 6px 10px; font-size: 1em;}
+    .scroll-wrapper { padding: 0 20px; }
+    .scroll-wrapper h2 { font-size: 1.5em; }
+    .recommendation-card { width: 200px; margin-right: 15px; }
+    .recommendation-card img { height: 300px; }
+    .movie-details h3 { font-size: 1.05em; }
+    .content-block { padding: 25px 20px; width: calc(100% - 30px); }
+    #image-carousel-section.content-block { padding: 25px 10px; }
+    .carousel-slide img { height: 350px; }
+    .carousel-btn { padding: 8px 12px; font-size: 1.2em; }
+    .carousel-dot { height: 10px; width: 10px; }
+    .content-block h2 { font-size: 1.7em; } /* General h2 */
+    .todo-input-area { flex-direction: column; gap: 15px; }
+    #addTodoButton { align-self: stretch; }
+    .page-container { gap: 20px 0; }
+    .notification-panel { width: 300px; }
 }
 
 @media (max-width: 480px) {
-    body {
-        font-size: 15px;
-    }
-    header h1 {
-        font-size: 2.2em;
-    }
-     .scroll-wrapper {
-        padding: 0 15px;
-    }
-    .recommendation-card {
-        width: 160px;
-        margin-right: 10px;
-    }
-    .recommendation-card img {
-        height: 240px;
-    }
-     .movie-details h3 {
-        font-size: 0.95em;
-    }
-     .rating-votes .rating {
-        font-size: 0.9em;
-    }
-     .rating-votes .votes {
-        font-size: 0.7em;
-     }
-     .movie-details .metadata {
-         font-size: 0.75em;
-     }
-    .content-block {
-        padding: 20px 15px;
-        width: calc(100% - 20px);
-    }
-    .content-block h2 {
-        font-size: 1.5em;
-    }
-    .carousel-slide img {
-        height: 280px; /* Adjust carousel image height for mobile */
-    }
-    .carousel-btn {
-        padding: 6px 10px;
-        font-size: 1em;
-        /* top: 45%; Consider adjusting position if content clashes */
-    }
-     .carousel-btn.prev-btn { left: 10px; }
-     .carousel-btn.next-btn { right: 10px; }
+    body { font-size: 15px; }
+    header { flex-direction: column; gap: 10px;}
+    header h1 { font-size: 2em; margin-bottom: 10px;}
+    .header-controls {align-self: flex-end; margin-right: 0;}
+
+    .scroll-wrapper { padding: 0 15px; }
+    .scroll-wrapper h2 { font-size: 1.3em; }
+    .recommendation-card { width: 160px; margin-right: 10px; }
+    .recommendation-card img { height: 240px; }
+    .movie-details h3 { font-size: 0.95em; }
+    .rating-votes .rating { font-size: 0.9em; }
+    .rating-votes .votes { font-size: 0.7em; }
+    .movie-details .metadata { font-size: 0.75em; }
+    .content-block { padding: 20px 15px; width: calc(100% - 20px); }
+    .content-block h2 { font-size: 1.5em; } /* General h2 */
+    .carousel-slide img { height: 280px; }
+    .carousel-btn { padding: 6px 10px; font-size: 1em; }
+    .carousel-btn.prev-btn { left: 10px; }
+    .carousel-btn.next-btn { right: 10px; }
     .carousel-dots { bottom: 5px; }
     .carousel-dot { height: 8px; width: 8px; margin: 0 3px;}
-
-     .form-submit-btn, #addTodoButton {
-         padding: 10px 25px;
-         font-size: 1em;
-     }
-     #todoList li {
-         font-size: 0.95em;
-         padding: 10px 12px;
-         margin-bottom: 8px;
-     }
-     .remove-todo-btn {
-         font-size: 1em;
-     }
-    .page-container {
-        gap: 15px 0;
+    .form-submit-btn, #addTodoButton { padding: 10px 25px; font-size: 1em; }
+    #todoList li { font-size: 0.95em; padding: 10px 12px; margin-bottom: 8px; }
+    .remove-todo-btn { font-size: 1em; }
+    .page-container { gap: 15px 0; }
+    .notification-panel {
+        bottom: 10px;
+        right: -100%; /* Adjust for full width slide */
+        width: calc(100% - 20px);
+        margin: 0 10px;
+    }
+    .notification-panel.show {
+        right: 10px; /* or transform: translateX(0) if starting with -100%*/
     }
 }
