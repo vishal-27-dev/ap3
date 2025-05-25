@@ -6,43 +6,67 @@
     <title>Vis Recommendations</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page-container">
 
-        <header>
+        <header class="site-header">
             <h1>Vis Recommendations</h1>
             <div class="header-controls">
                 <button id="themeToggleBtn" aria-label="Toggle theme">🌙</button>
             </div>
         </header>
 
-        <!-- Image Carousel Section -->
-        <section id="image-carousel-section" class="content-block">
-            <h2>Featured Highlights</h2>
-            <div class="carousel-container">
-                <div class="carousel-slides">
-                    <!-- Slides will be injected by JavaScript -->
-                     <div class="spinner-container"><div class="spinner"></div><p>Loading highlights...</p></div>
-                </div>
-                <button class="carousel-btn prev-btn" aria-label="Previous slide" style="display:none;">❮</button>
-                <button class="carousel-btn next-btn" aria-label="Next slide" style="display:none;">❯</button>
-                <div class="carousel-dots">
-                    <!-- Dots will be injected by JavaScript -->
-                </div>
-            </div>
+        <!-- Spotlight Recommendation Section (replaces old carousel) -->
+        <section id="spotlight-section" class="content-block">
+            <!-- Content dynamically injected by JS -->
+             <div class="spinner-container full-width-spinner"><div class="spinner"></div><p>Loading Spotlight...</p></div>
         </section>
 
-        <!-- Dynamic Recommendations Section -->
-        <div class="scroll-wrapper">
-            <h2>Curated For You (from your list)</h2>
+        <!-- Curated Recommendations List -->
+        <section class="recommendations-list-section">
+            <div class="list-header">
+                <h2>Curated For You</h2>
+                <!-- Future: Add filter/sort controls here -->
+            </div>
             <main id="recommendationContainer" class="recommendation-container scrollable">
                 <div class="spinner-container full-width-spinner"><div class="spinner"></div><p>Loading your recommendations...</p></div>
                 <!-- Movie/Show recommendations will be loaded here -->
             </main>
-        </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq-section" class="content-block">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How are these movies recommended?</button>
+                    <div class="faq-answer">
+                        <p>The "Curated For You" list is based on a predefined set of titles. We fetch detailed information for these titles from The Movie Database (TMDB) to provide you with rich content like posters, ratings, and overviews.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Can I get more details about a movie?</button>
+                    <div class="faq-answer">
+                        <p>Yes! Simply click on any movie card, and a detailed view will pop up, showing the synopsis, cast, genres, and even a trailer if available.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How is the "Spotlight" recommendation chosen?</button>
+                    <div class="faq-answer">
+                        <p>The Spotlight section highlights a top pick, often the first item from our curated list, giving it special prominence.</p>
+                    </div>
+                </div>
+                 <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Is this site affiliated with any streaming service?</button>
+                    <div class="faq-answer">
+                        <p>No, Vis Recommendations is an independent platform designed to help you discover great movies and TV shows. We provide information but do not host or stream content directly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Contact Form Section -->
         <section id="contact-section" class="content-block">
@@ -75,21 +99,40 @@
 
         <!-- Dynamic To-Do List Section -->
         <section id="todo-section" class="content-block">
-            <h2>My To-Do List</h2>
+            <h2>My Personal Watchlist (To-Do)</h2>
             <div class="todo-input-area">
-                <input type="text" id="todoInput" placeholder="Add a new task..." aria-label="New task input">
-                <button id="addTodoButton" type="button">Add Task</button>
+                <input type="text" id="todoInput" placeholder="Add movie/show to watchlist..." aria-label="New task input">
+                <button id="addTodoButton" type="button">Add to Watchlist</button>
             </div>
             <ul id="todoList">
                 <!-- Tasks will be added here by JavaScript -->
             </ul>
         </section>
 
-        <footer>
-            <p>© <span id="currentYear"></span> Vis Recommendations - Your Source for Cinematic Hits. Designed by <a href="https://github.com/vishal-27-dev" target="_blank" rel="noopener noreferrer">Vishal-Kumar-Rajak</a></p>
+        <footer class="site-footer-bottom">
+            <p>© <span id="currentYear"></span> Vis Recommendations - Your Source for Cinematic Hits. Designed by <a href="https://github.com/vishal-27-dev" target="_blank" rel="noopener noreferrer">Vishal-Kumar-Rajak</a>. Movie data powered by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDB</a>.</p>
         </footer>
 
     </div> <!-- end of .page-container -->
+
+    <!-- Movie Details Modal -->
+    <div id="movieDetailModal" class="modal" aria-hidden="true">
+        <div class="modal-overlay" tabindex="-1" data-micromodal-close></div>
+        <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h2 id="modalTitle" class="modal-title">Movie Title</h2>
+                <button class="modal-close" aria-label="Close modal" data-micromodal-close>×</button>
+            </div>
+            <div id="modalContent" class="modal-content">
+                <!-- Detailed content injected by JS -->
+                <div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" data-micromodal-close>Close</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Notification Panel -->
     <div id="notificationPanel" class="notification-panel">
@@ -97,6 +140,7 @@
         <button class="close-notification" aria-label="Close notification">×</button>
     </div>
 
+    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
