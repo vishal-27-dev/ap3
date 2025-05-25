@@ -7,23 +7,23 @@
 
 /* Theme Variables */
 :root {
-    --bg-color: #0a0a0a; /* Darker base */
+    --bg-color: #0a0a0a;
     --text-color: #e0e0e0;
     --text-muted-color: #a0a0a0;
-    --card-bg-color: #181818; /* Slightly lighter card */
+    --card-bg-color: #181818;
     --card-detail-bg-color: #1f1f1f;
-    --content-block-bg-color: #121212; /* Base for content sections */
+    --content-block-bg-color: #121212;
     --input-bg-color: #282828;
     --border-color: #2c2c2c;
     --border-strong-color: #444;
     --primary-accent-color: #E50914;
     --primary-accent-hover-color: #f40612;
-    --secondary-accent-color: #007bff; /* Example secondary */
+    --secondary-accent-color: #007bff;
     --star-color: #f5c518;
     --success-color: #4CAF50;
     --error-color: #ff4d4d;
     --font-primary: 'Roboto', sans-serif;
-    --font-secondary: 'Open Sans', sans-serif; /* For body text, FAQs etc. */
+    --font-secondary: 'Open Sans', sans-serif;
 
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
@@ -58,7 +58,7 @@ body {
 .page-container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto auto auto 1fr auto; /* Header, Spotlight, List, FAQ, Contact, ToDo, Filler, Footer */
+    grid-template-rows: auto auto auto auto auto auto 1fr auto;
     grid-template-areas:
         "header"
         "spotlight"
@@ -69,12 +69,12 @@ body {
         "filler"
         "footer";
     min-height: 100vh;
-    gap: calc(var(--spacing-unit) * 4) 0; /* 32px */
+    gap: calc(var(--spacing-unit) * 4) 0;
 }
 
 /* Assigning areas */
 .site-header { grid-area: header; }
-#spotlight-section { grid-area: spotlight; }
+.spotlight-wrapper { grid-area: spotlight; } /* Wrapper for spotlight content block */
 .recommendations-list-section { grid-area: recommendations; }
 #faq-section { grid-area: faq; }
 #contact-section { grid-area: contact; }
@@ -114,10 +114,15 @@ body {
 }
 
 /* --- Spotlight Recommendation Section --- */
-#spotlight-section {
-    padding: calc(var(--spacing-unit) * 2);
+.spotlight-wrapper {
+    padding: 0; /* Spotlight content block handles its own padding */
     max-width: 1200px;
-    margin: 0 auto; /* Center the section */
+    width: 95%; /* Ensure it doesn't touch screen edges */
+    margin: 0 auto;
+}
+#spotlight-section { /* This is now the content block itself */
+    padding: calc(var(--spacing-unit) * 2);
+    /* Other styles from .content-block will apply if needed */
 }
 .spotlight-card {
     display: flex;
@@ -125,7 +130,7 @@ body {
     border-radius: var(--border-radius-md);
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    min-height: 400px; /* For loading */
+    min-height: 400px;
 }
 .spotlight-poster img {
     width: 300px;
@@ -159,11 +164,11 @@ body {
     margin-bottom: calc(var(--spacing-unit) * 2);
     flex-grow: 1;
     color: var(--text-color);
-    max-height: 150px; /* Limit height */
-    overflow-y: auto; /* Allow scrolling for long overviews */
+    max-height: 150px;
+    overflow-y: auto;
 }
 .spotlight-actions .btn {
-    margin-top: auto; /* Push to bottom if space allows */
+    margin-top: auto;
     padding: calc(var(--spacing-unit)*1.2) calc(var(--spacing-unit)*3);
 }
 
@@ -188,6 +193,7 @@ body {
 }
 .btn-secondary {
     background-color: var(--border-strong-color);
+    color: var(--text-color);
 }
 .btn-secondary:hover {
     background-color: var(--text-muted-color);
@@ -196,10 +202,10 @@ body {
 
 /* --- Curated Recommendations List Section --- */
 .recommendations-list-section {
-    max-width: 1300px; /* Slightly wider for list */
-    width: 95%;
+    max-width: 1300px;
+    width: 95%; /* ensure it doesn't touch screen edges */
     margin: 0 auto;
-    padding: 0 calc(var(--spacing-unit) * 2);
+    padding: 0 calc(var(--spacing-unit) * 1); /* reduce side padding slightly */
 }
 .list-header {
     margin-bottom: calc(var(--spacing-unit) * 2.5);
@@ -213,13 +219,15 @@ body {
 /* Recommendation Container - Scrollable Cards */
 .recommendation-container.scrollable {
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto; /* Kept for manual scroll, JS will handle auto */
     padding-bottom: calc(var(--spacing-unit) * 2);
-    gap: calc(var(--spacing-unit) * 2.5); /* 20px gap */
+    gap: calc(var(--spacing-unit) * 2.5);
     -ms-overflow-style: none;
     scrollbar-width: thin;
     scrollbar-color: var(--border-strong-color) transparent;
-    min-height: 380px; /* Initial height before cards load */
+    min-height: 380px;
+    /* For JS auto-scroll, it might be useful to have it as a non-wrapping flex container */
+    flex-wrap: nowrap; /* Explicitly prevent wrapping for horizontal scroll */
 }
 .recommendation-container.scrollable::-webkit-scrollbar { height: 8px; }
 .recommendation-container.scrollable::-webkit-scrollbar-thumb {
@@ -228,7 +236,7 @@ body {
 }
 .recommendation-container.scrollable::-webkit-scrollbar-track { background: transparent; }
 
-.api-message { /* Inside recommendationContainer for API messages */
+.api-message {
     color: var(--text-muted-color);
     font-style: italic;
     margin: auto;
@@ -237,12 +245,12 @@ body {
     width: 100%;
 }
 
-/* Individual Recommendation Card Styling - More Refined */
+/* Individual Recommendation Card Styling */
 .recommendation-card {
     background-color: var(--card-bg-color);
     border-radius: var(--border-radius-md);
     overflow: hidden;
-    width: 220px; /* Slightly narrower cards for more on screen */
+    width: 220px;
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
@@ -251,6 +259,7 @@ body {
     transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
     cursor: pointer;
 }
+/* ... rest of card styles remain the same ... */
 [data-theme="dark"] .recommendation-card {
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
@@ -261,19 +270,17 @@ body {
 [data-theme="dark"] .recommendation-card:hover {
     box-shadow: 0 8px 20px rgba(200,200,200,0.08);
 }
-
 .card-poster-link { display: block; }
 .card-poster-link img {
     width: 100%;
-    height: 300px; /* Adjusted height */
+    height: 300px;
     object-fit: cover;
     display: block;
     background-color: #333;
     border-bottom: 1px solid var(--border-color);
 }
-
 .movie-details {
-    padding: var(--spacing-unit) * 1.5;
+    padding: calc(var(--spacing-unit) * 1.5);
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -281,7 +288,7 @@ body {
 }
 .movie-details h3 {
     color: var(--text-color);
-    font-size: 1.1em; /* Slightly larger */
+    font-size: 1.1em;
     font-weight: 500;
     margin-bottom: calc(var(--spacing-unit) * 0.5);
     white-space: nowrap;
@@ -305,51 +312,49 @@ body {
 }
 .rating-votes .rating { color: var(--star-color); font-weight: 700; margin-right: var(--spacing-unit); }
 .rating-votes .votes { color: var(--text-muted-color); font-size: 0.8em; }
-.movie-metadata { /* Replaces old .metadata */
+.movie-metadata {
     font-size: 0.8em;
     color: var(--text-muted-color);
-    margin-top: auto; /* Pushes to bottom */
+    margin-top: auto;
     padding-top: calc(var(--spacing-unit) * 0.5);
 }
 
 
 /* General Content Block Styling (FAQs, Contact, ToDo) */
 .content-block {
-    padding: calc(var(--spacing-unit) * 3) calc(var(--spacing-unit) * 4);
+    padding: calc(var(--spacing-unit) * 3) calc(var(--spacing-unit) * 2); /* Adjust padding slightly */
     background-color: var(--content-block-bg-color);
     margin: 0 auto;
     border-radius: var(--border-radius-md);
-    max-width: 800px; /* Consistent max width for these text-heavy blocks */
-    width: 90%;
+    max-width: 800px;
+    width: 90%; /* Make this more flexible on smaller screens below */
     border: 1px solid var(--border-color);
     transition: background-color 0.3s, border-color 0.3s;
 }
-.content-block h2 {
+.section-title { /* Common style for section headings */
     color: var(--text-color);
     font-size: 1.8em;
     font-weight: 600;
     margin-bottom: calc(var(--spacing-unit) * 3);
     text-align: center;
-    border-bottom: 2px solid var(--primary-accent-color);
     padding-bottom: var(--spacing-unit);
-    display: inline-block; /* Center the heading block itself */
+    position: relative;
 }
-/* Centering the h2 block itself */
-.content-block > h2 {
-    display: block; /* Override inline-block if direct child of content-block */
-    border-bottom: none; /* Remove border from content-block>h2 directly if not needed globally */
-    padding-bottom: 0;
-}
-/* Re-apply specific title style if needed globally or use a class for section titles */
-.content-block .section-title { /* Example of a specific class for styled titles */
-    border-bottom: 2px solid var(--primary-accent-color);
-    padding-bottom: var(--spacing-unit);
-    display: inline-block;
+.section-title::after { /* Underline effect */
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-accent-color);
+    border-radius: 2px;
 }
 
 
 /* Spinner animation */
-.spinner-container {
+.spinner-container { /* ... same ... */
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     min-height: 150px; width: 100%; color: var(--text-muted-color); font-family: var(--font-secondary);
 }
@@ -361,8 +366,8 @@ body {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+
 /* --- FAQ Section --- */
-#faq-section h2 { margin-bottom: calc(var(--spacing-unit) * 2); }
 .faq-list { display: flex; flex-direction: column; gap: var(--spacing-unit); }
 .faq-item {
     background-color: var(--card-bg-color);
@@ -385,31 +390,36 @@ body {
     align-items: center;
     transition: background-color 0.2s;
 }
-.faq-question:hover { background-color: var(--card-detail-bg-color); }
-.faq-question::after { /* Arrow indicator */
+.faq-question:hover, .faq-question:focus {
+    background-color: var(--card-detail-bg-color);
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}
+.faq-question::after {
     content: '▼';
     font-size: 0.8em;
     transition: transform 0.3s ease;
+    margin-left: var(--spacing-unit);
 }
 .faq-question[aria-expanded="true"]::after { transform: rotate(180deg); }
 .faq-answer {
-    padding: 0 calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 1.5);
+    padding: 0 calc(var(--spacing-unit) * 2) 0;
     font-family: var(--font-secondary);
     font-size: 0.95em;
     color: var(--text-muted-color);
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    transition: max-height 0.35s ease-out, padding-top 0.35s ease-out, padding-bottom 0.35s ease-out;
 }
 .faq-answer p { margin-bottom: var(--spacing-unit); }
-.faq-answer[aria-hidden="false"] {
-    max-height: 300px; /* Adjust as needed for content */
+/* Style when answer is shown */
+.faq-question[aria-expanded="true"] + .faq-answer {
+    max-height: 300px; /* Adjust as needed */
     padding-top: var(--spacing-unit);
     padding-bottom: calc(var(--spacing-unit) * 1.5);
 }
 
-/* Contact Form & To-Do (styling can largely reuse existing with theme vars) */
-/* Ensure input backgrounds and borders use theme variables */
+/* Contact Form & To-Do */
 #contactForm, #todo-section .todo-input-area { margin-bottom: calc(var(--spacing-unit)*2); }
 .form-group label, #todoInput::placeholder { color: var(--text-muted-color); }
 .form-group input[type="text"],
@@ -420,9 +430,27 @@ body {
     color: var(--text-color);
     border: 1px solid var(--border-strong-color);
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
+    padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 1.5); /* Consistent padding */
+    border-radius: var(--border-radius-sm);
+    font-size: 1em;
+    width: 100%; /* Ensure inputs take full width of their form-group */
 }
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus,
+#todoInput:focus {
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent-color) 30%, transparent);
+    outline: none;
+}
+.form-submit-btn, #addTodoButton { /* They already use .btn class */
+    align-self: flex-start; /* Align to left in forms */
+}
+#contactForm .form-submit-btn { margin-top: var(--spacing-unit); }
+
+
 #todoList li {
-    background-color: var(--input-bg-color); /* Using input-bg for tasks */
+    background-color: var(--input-bg-color);
     border-left-color: var(--border-strong-color);
 }
 #todoList li:hover {
@@ -430,11 +458,11 @@ body {
     border-left-color: var(--primary-accent-color);
 }
 #todoList li.completed {
-    background-color: var(--border-color); /* Distinct for completed */
+    background-color: var(--border-color);
 }
 
 
-/* Footer Styling */
+/* Footer Styling */ /* ... same ... */
 .site-footer-bottom {
     text-align: center;
     padding: calc(var(--spacing-unit) * 3);
@@ -452,8 +480,8 @@ body {
 .site-footer-bottom a:hover { text-decoration: underline; }
 
 
-/* --- Modal Styling --- */
-.modal { display: none; } /* Micromodal handles visibility */
+/* --- Modal Styling --- */ /* ... same ... */
+.modal { display: none; }
 .modal.is-open { display: flex; }
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -495,39 +523,41 @@ body {
 .modal-content {
     padding: calc(var(--spacing-unit)*2.5);
     flex-grow: 1;
-    overflow-y: auto; /* Scroll for content if it overflows */
+    overflow-y: auto;
 }
 .modal-footer {
     padding: var(--spacing-unit)*2 calc(var(--spacing-unit)*2.5);
     border-top: 1px solid var(--border-color);
     text-align: right;
 }
-.modal-btn { /* Reuse general .btn styling or define specifics */ }
+.modal-btn {}
 
-/* Specifics for modal content */
+/* Specifics for modal content */ /* ... same ... */
+.detail-main-layout { display: flex; gap: calc(var(--spacing-unit)*2); margin-bottom: calc(var(--spacing-unit)*2);}
 .detail-poster img {
     width: 150px;
     height: auto;
     border-radius: var(--border-radius-sm);
-    float: left;
-    margin-right: calc(var(--spacing-unit) * 2);
-    margin-bottom: var(--spacing-unit);
+    /* float: left; Removed for flex */
+    /* margin-right: calc(var(--spacing-unit) * 2); Removed for flex gap */
+    /* margin-bottom: var(--spacing-unit); */
 }
-.detail-info h3 {
+.detail-primary-info { flex-grow: 1; }
+.detail-primary-info h3, .detail-secondary-info h3 {
     font-size: 1.2em;
     font-weight: 600;
-    margin-top: var(--spacing-unit);
+    margin-top: 0; /* Reset margin-top for these headings */
     margin-bottom: calc(var(--spacing-unit) * 0.5);
     color: var(--text-color);
 }
-.detail-info p, .detail-info div {
+.detail-primary-info p, .detail-secondary-info p, .detail-secondary-info div {
     font-family: var(--font-secondary);
     font-size: 0.95em;
     margin-bottom: var(--spacing-unit);
     color: var(--text-muted-color);
     line-height: 1.7;
 }
-.detail-info .genres-container span, .detail-info .cast-list span {
+.genres-container span, .cast-list span {
     display: inline-block;
     background-color: var(--border-color);
     color: var(--text-color);
@@ -539,7 +569,7 @@ body {
 }
 .trailer-container iframe {
     width: 100%;
-    height: 300px; /* Adjust as needed */
+    height: 300px;
     border: none;
     border-radius: var(--border-radius-sm);
 }
@@ -549,10 +579,44 @@ body {
     font-size: 0.9em;
 }
 
-/* Notification Panel (styling generally okay from before, ensure theme vars are used) */
+
+/* Notification Panel */ /* ... same ... */
 .notification-panel {
+    position: fixed;
+    bottom: 20px;
+    right: -400px; /* Start off-screen */
+    width: 350px;
+    max-width: 90%;
     background-color: var(--card-detail-bg-color);
     color: var(--text-color);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: right 0.5s ease-in-out, background-color 0.3s, color 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.notification-panel.show {
+    right: 20px; /* Slide in */
+}
+.notification-panel p {
+    margin: 0;
+    flex-grow: 1;
+}
+.close-notification {
+    background: none;
+    border: none;
+    color: var(--text-muted-color);
+    font-size: 1.5em;
+    line-height: 1;
+    padding: 0 5px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close-notification:hover {
+    color: var(--primary-accent-color);
 }
 
 
@@ -565,35 +629,56 @@ body {
 
 @media (max-width: 768px) {
     .site-header h1 { font-size: 1.6em; }
-    .recommendation-container.scrollable { gap: var(--spacing-unit) * 2; } /* 16px gap */
+    .recommendation-container.scrollable { gap: var(--spacing-unit) * 2; }
     .recommendation-card { width: 180px; }
     .card-poster-link img { height: 270px; }
-    .content-block { padding: calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 2); }
-    .list-header h2, #spotlight-details h2, .content-block h2 { font-size: 1.5em; }
+
+    /* Content block scaling */
+    .content-block {
+        width: 95%; /* Use more width on smaller screens */
+        padding: calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 1.5);
+    }
+    .spotlight-wrapper, .recommendations-list-section { width: 100%; padding: 0 calc(var(--spacing-unit)); }
+
+
+    .list-header h2, .spotlight-details h2, .section-title { font-size: 1.5em; }
     .modal-container { width: 95%; max-height: 85vh;}
     .modal-title { font-size: 1.3em; }
     .detail-poster img { width: 120px; }
     .trailer-container iframe { height: 250px; }
+    .detail-main-layout { flex-direction: column; align-items: center; text-align: center;}
+    .detail-poster img { margin-bottom: var(--spacing-unit);}
 }
 
 @media (max-width: 480px) {
-    :root { --spacing-unit: 6px; } /* Reduce base spacing unit on small screens */
+    :root { --spacing-unit: 6px; }
     .site-header { flex-direction: column; gap: var(--spacing-unit); padding: var(--spacing-unit) * 1.5; }
     .site-header h1 { font-size: 1.5em; text-align: center; }
     .header-controls { align-self: center; }
 
-    #spotlight-details h2 {font-size: 1.8em;}
+    .spotlight-details h2 {font-size: 1.8em;}
     .spotlight-overview { font-size: 0.9em; max-height: 100px;}
-    .recommendations-list-section { padding: 0 var(--spacing-unit); }
-    .list-header h2, .content-block h2 { font-size: 1.3em; }
+
+    .list-header h2, .section-title { font-size: 1.3em; }
     .recommendation-card { width: 150px; }
     .card-poster-link img { height: 220px; }
     .movie-details h3 { font-size: 1em; }
-    .form-submit-btn, #addTodoButton { width: 100%; padding: var(--spacing-unit)*1.5; }
+    .form-submit-btn, #addTodoButton {
+        width: 100%;
+        padding: calc(var(--spacing-unit)*1.8) var(--spacing-unit); /* Make buttons chunkier */
+        font-size: 1.05em;
+    }
+    .todo-input-area { flex-direction: column; gap: var(--spacing-unit) * 1.5;}
+
+
     .modal-container { border-radius: 0; width: 100%; max-height: 100vh; height: 100%; }
     .modal-header, .modal-content, .modal-footer { padding: var(--spacing-unit) * 1.5; }
     .detail-poster img { float: none; display: block; margin: 0 auto var(--spacing-unit); width: 100px;}
     .trailer-container iframe { height: 200px; }
     .notification-panel { width: calc(100% - 20px); bottom: 10px; right: -100%; margin: 0 10px; }
     .notification-panel.show { right: 10px; }
+
+    /* Content block scaling for very small screens */
+    .content-block { width: calc(100% - calc(var(--spacing-unit) * 2)); }
+    .spotlight-wrapper, .recommendations-list-section { padding: 0 var(--spacing-unit);}
 }
