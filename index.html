@@ -19,17 +19,16 @@
             </div>
         </header>
 
-        <!-- Spotlight Recommendation Section (replaces old carousel) -->
-        <section id="spotlight-section" class="content-block">
-            <!-- Content dynamically injected by JS -->
+        <!-- Spotlight Recommendation Section -->
+        <section id="spotlight-section" class="content-block spotlight-wrapper">
              <div class="spinner-container full-width-spinner"><div class="spinner"></div><p>Loading Spotlight...</p></div>
+            <!-- Content dynamically injected by JS -->
         </section>
 
         <!-- Curated Recommendations List -->
         <section class="recommendations-list-section">
             <div class="list-header">
                 <h2>Curated For You</h2>
-                <!-- Future: Add filter/sort controls here -->
             </div>
             <main id="recommendationContainer" class="recommendation-container scrollable">
                 <div class="spinner-container full-width-spinner"><div class="spinner"></div><p>Loading your recommendations...</p></div>
@@ -39,29 +38,29 @@
 
         <!-- FAQ Section -->
         <section id="faq-section" class="content-block">
-            <h2>Frequently Asked Questions</h2>
+            <h2 class="section-title">Frequently Asked Questions</h2>
             <div class="faq-list">
                 <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How are these movies recommended?</button>
-                    <div class="faq-answer">
+                    <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1">How are these movies recommended?</button>
+                    <div class="faq-answer" id="faq-answer-1" role="region" aria-hidden="true">
                         <p>The "Curated For You" list is based on a predefined set of titles. We fetch detailed information for these titles from The Movie Database (TMDB) to provide you with rich content like posters, ratings, and overviews.</p>
                     </div>
                 </div>
                 <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Can I get more details about a movie?</button>
-                    <div class="faq-answer">
+                    <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2">Can I get more details about a movie?</button>
+                    <div class="faq-answer" id="faq-answer-2" role="region" aria-hidden="true">
                         <p>Yes! Simply click on any movie card, and a detailed view will pop up, showing the synopsis, cast, genres, and even a trailer if available.</p>
                     </div>
                 </div>
                 <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How is the "Spotlight" recommendation chosen?</button>
-                    <div class="faq-answer">
+                    <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3">How is the "Spotlight" recommendation chosen?</button>
+                    <div class="faq-answer" id="faq-answer-3" role="region" aria-hidden="true">
                         <p>The Spotlight section highlights a top pick, often the first item from our curated list, giving it special prominence.</p>
                     </div>
                 </div>
                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Is this site affiliated with any streaming service?</button>
-                    <div class="faq-answer">
+                    <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-4">Is this site affiliated with any streaming service?</button>
+                    <div class="faq-answer" id="faq-answer-4" role="region" aria-hidden="true">
                         <p>No, Vis Recommendations is an independent platform designed to help you discover great movies and TV shows. We provide information but do not host or stream content directly.</p>
                     </div>
                 </div>
@@ -70,7 +69,7 @@
 
         <!-- Contact Form Section -->
         <section id="contact-section" class="content-block">
-            <h2>Contact Us</h2>
+            <h2 class="section-title">Contact Us</h2>
             <form id="contactForm" novalidate>
                 <div class="form-group">
                     <label for="name">Name:</label>
@@ -92,17 +91,17 @@
                     <textarea id="message" name="message" rows="5" required></textarea>
                     <small class="error-message"></small>
                 </div>
-                <button type="submit" class="form-submit-btn">Send Message</button>
+                <button type="submit" class="form-submit-btn btn">Send Message</button>
             </form>
             <p id="formSuccessMessage" class="success-message" style="display:none;"></p>
         </section>
 
         <!-- Dynamic To-Do List Section -->
         <section id="todo-section" class="content-block">
-            <h2>My Personal Watchlist (To-Do)</h2>
+            <h2 class="section-title">My Personal Watchlist</h2>
             <div class="todo-input-area">
                 <input type="text" id="todoInput" placeholder="Add movie/show to watchlist..." aria-label="New task input">
-                <button id="addTodoButton" type="button">Add to Watchlist</button>
+                <button id="addTodoButton" type="button" class="btn">Add to Watchlist</button>
             </div>
             <ul id="todoList">
                 <!-- Tasks will be added here by JavaScript -->
@@ -124,11 +123,10 @@
                 <button class="modal-close" aria-label="Close modal" data-micromodal-close>×</button>
             </div>
             <div id="modalContent" class="modal-content">
-                <!-- Detailed content injected by JS -->
                 <div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn modal-btn-primary" data-micromodal-close>Close</button>
+                <button class="modal-btn btn btn-secondary" data-micromodal-close>Close</button>
             </div>
         </div>
     </div>
