@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // --- TMDB API Configuration ---
-    const TMDB_API_KEY = '929d161540da6a455e07eb90318d6f42'; // <-- REPLACE
+    const TMDB_API_KEY = '929d161540da6a455e07eb90318d6f42'; // <-- REPLACE WITH YOUR ACTUAL TMDB API KEY
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-    const TMDB_IMG_URL = 'https://image.tmdb.org/t/p/w500';
-    const TMDB_BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
+    const TMDB_IMG_URL = 'https://image.tmdb.org/t/p/w500'; // For posters
+    const TMDB_BACKDROP_URL = 'https://image.tmdb.org/t/p/w780'; // For backdrop/spotlight
 
-    // --- Movie Titles ---
+    // --- Movie Titles from your rec.txt (simulated) ---
     const movieTitlesFromRecTxt = [
         "Inception", "The Dark Knight", "Interstellar", "Pulp Fiction",
         "Fight Club", "Forrest Gump", "The Shawshank Redemption",
         "Parasite", "Mirzapur", "Sacred Games", "K.G.F: Chapter 2", "Pushpa: The Rise",
-        "Gladiator", "The Matrix", "Spirited Away", "The Godfather"
-    ];
+        "Gladiator", "The Matrix", "Spirited Away", "The Godfather", "The Lion King", "Avengers: Endgame"
+    ]; // Added a few more for better scroll testing
 
     const spotlightSection = document.getElementById('spotlight-section');
     const recommendationContainer = document.getElementById('recommendationContainer');
@@ -21,16 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Helper: Display Notification ---
-    // (Keep existing code from previous version)
     const notificationPanel = document.getElementById('notificationPanel');
     const notificationMessage = document.getElementById('notificationMessage');
     const closeNotificationBtn = notificationPanel.querySelector('.close-notification');
     let notificationTimeout;
+
     function showNotification(message, duration = 4000) {
         if (!notificationPanel || !notificationMessage) return;
         notificationMessage.textContent = message;
         notificationPanel.classList.add('show');
-        clearTimeout(notificationTimeout);
+        clearTimeout(notificationTimeout); // Clear existing timeout
         notificationTimeout = setTimeout(() => {
             notificationPanel.classList.remove('show');
         }, duration);
@@ -42,19 +42,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-
     // --- Theme Toggle ---
-    // (Keep existing code from previous version)
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+
     if (currentTheme) {
         document.documentElement.setAttribute('data-theme', currentTheme);
-        if (currentTheme === 'light') themeToggleBtn.textContent = '☀️';
-        else themeToggleBtn.textContent = '🌙';
-    } else {
+        if (currentTheme === 'light') {
+            themeToggleBtn.textContent = '☀️';
+        } else {
+            themeToggleBtn.textContent = '🌙';
+        }
+    } else { // Default to dark
         document.documentElement.setAttribute('data-theme', 'dark');
         themeToggleBtn.textContent = '🌙';
     }
+
     themeToggleBtn.addEventListener('click', () => {
         let currentThemeVal = document.documentElement.getAttribute('data-theme');
         if (currentThemeVal === 'dark') {
@@ -72,8 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- API Fetching Utilities ---
-    // (Keep existing code from previous version)
-    async function fetchFromTMDB(endpoint, params = "") { /* ... */
+    async function fetchFromTMDB(endpoint, params = "") {
         if (!TMDB_API_KEY || TMDB_API_KEY === 'YOUR_TMDB_API_KEY') {
             console.error("TMDB API Key is not configured.");
             showNotification("TMDB API Key missing. Please configure.", 5000);
@@ -96,7 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return null;
         }
     }
-    async function searchTMDB(query) { /* ... */
+
+    async function searchTMDB(query) {
         let movieData = await fetchFromTMDB("/search/movie", `&query=${encodeURIComponent(query)}`);
         if (movieData && movieData.results && movieData.results.length > 0) {
             return { ...movieData.results[0], media_type: 'movie' };
@@ -108,20 +111,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn(`No results found for "${query}" as movie or TV show.`);
         return null;
     }
-    async function getItemDetails(id, mediaType) { /* ... */
+
+    async function getItemDetails(id, mediaType) {
         return await fetchFromTMDB(`/${mediaType}/${id}`, '&append_to_response=videos,credits,external_ids');
     }
 
 
     // --- Display Spotlight Recommendation ---
-    // (Keep existing code from previous version, ensure .spotlight-wrapper exists in HTML)
     async function displaySpotlightRecommendation() {
         if (!spotlightSection || movieTitlesFromRecTxt.length === 0) {
             if (spotlightSection) spotlightSection.innerHTML = '<p class="api-message">No items for spotlight.</p>';
             return;
         }
 
-        const spotlightTitle = movieTitlesFromRecTxt[0];
+        const spotlightTitle = movieTitlesFromRecTxt[0]; // Use the first item from your list
         const itemData = await searchTMDB(spotlightTitle);
 
         const spinner = spotlightSection.querySelector('.spinner-container');
@@ -155,15 +158,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>`;
-            
+
             const currentCardBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg-color').trim();
-            let cardBgRgb = '24,24,24'; // Default dark
-            if (currentCardBgColor.startsWith('#')) { // Hex to RGB
+            let cardBgRgb = '24,24,24'; // Default dark theme RGB
+            if (currentCardBgColor.startsWith('#')) {
                  const r = parseInt(currentCardBgColor.slice(1, 3), 16);
                  const g = parseInt(currentCardBgColor.slice(3, 5), 16);
                  const b = parseInt(currentCardBgColor.slice(5, 7), 16);
                  cardBgRgb = `${r},${g},${b}`;
-            } else if (currentCardBgColor.startsWith('rgb')) { // Already RGB
+            } else if (currentCardBgColor.startsWith('rgb')) {
                  cardBgRgb = currentCardBgColor.match(/\d+/g).join(',');
             }
             const spotlightCardElement = spotlightSection.querySelector('.spotlight-card');
@@ -174,24 +177,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
     // --- Display Curated Recommendations List & AUTO SCROLL ---
     let curatedScrollInterval;
     let isCuratedHovering = false;
-    const SCROLL_SPEED = 1; // pixels per frame
-    const SCROLL_INTERVAL_MS = 30; // ms per frame (adjust for smoother/faster scroll)
+    const SCROLL_SPEED = 1; // pixels per frame (adjust for speed)
+    const SCROLL_INTERVAL_MS = 25; // ms per frame (lower for smoother but more CPU)
+    let userManuallyScrolled = false; // Flag to detect if user initiated the scroll
 
-    function startCuratedAutoScroll() {
-        if (!recommendationContainer || curatedScrollInterval || isCuratedHovering) return;
+    function startCuratedAutoScroll(forceStart = false) {
+        if (!recommendationContainer || (curatedScrollInterval && !forceStart) || isCuratedHovering) {
+            return;
+        }
+        stopCuratedAutoScroll(); // Clear any existing interval
 
         curatedScrollInterval = setInterval(() => {
-            if (isCuratedHovering) return; // Paused
+            if (isCuratedHovering || userManuallyScrolled) {
+                return; // Paused
+            }
 
-            if (recommendationContainer.scrollLeft + recommendationContainer.clientWidth >= recommendationContainer.scrollWidth -1) { // -1 for potential subpixel issues
-                // Reached the end, scroll back to start smoothly or jump
-                // recommendationContainer.scrollLeft = 0; // Jump
-                // For smoother reverse or loop, more complex logic is needed. Let's reset for now.
+            const atEnd = recommendationContainer.scrollLeft + recommendationContainer.clientWidth >= recommendationContainer.scrollWidth - 5; // -5 buffer
+
+            if (atEnd) {
+                userManuallyScrolled = true; // Prevent stop/start conflict during programmatic scroll
                 recommendationContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    userManuallyScrolled = false;
+                    // Auto-scroll will continue on the next interval tick if not paused
+                }, 1000); // Approx time for smooth scroll to finish
             } else {
                 recommendationContainer.scrollLeft += SCROLL_SPEED;
             }
@@ -206,39 +218,46 @@ document.addEventListener('DOMContentLoaded', function() {
     if (recommendationContainer) {
         recommendationContainer.addEventListener('mouseenter', () => {
             isCuratedHovering = true;
-            // Optional: stopCuratedAutoScroll(); // Or just let the interval check isCuratedHovering
+            // Optional: stopCuratedAutoScroll(); // if immediate stop on hover is preferred
         });
+
         recommendationContainer.addEventListener('mouseleave', () => {
             isCuratedHovering = false;
-            startCuratedAutoScroll();
-        });
-         // If user scrolls manually, pause auto-scroll for a bit
-        let manualScrollTimeout;
-        recommendationContainer.addEventListener('scroll', () => {
-            if(!isCuratedHovering) { // only react if not paused by hover
-                stopCuratedAutoScroll();
-                clearTimeout(manualScrollTimeout);
-                manualScrollTimeout = setTimeout(startCuratedAutoScroll, 3000); // Restart after 3s of no manual scroll
+            if (!userManuallyScrolled) {
+                startCuratedAutoScroll(true);
             }
         });
+
+        let manualScrollTimeout;
+        recommendationContainer.addEventListener('scroll', (event) => {
+            if (!isCuratedHovering) { // Only react if not paused by hover
+                if (event.isTrusted && !userManuallyScrolled) { // Check if the event is user-initiated and not part of our programmatic scroll reset
+                    userManuallyScrolled = true;
+                    stopCuratedAutoScroll();
+                    clearTimeout(manualScrollTimeout);
+                    manualScrollTimeout = setTimeout(() => {
+                        userManuallyScrolled = false;
+                        startCuratedAutoScroll(true);
+                    }, 3000); // Restart after 3s of no manual scroll
+                }
+            }
+        }, { passive: true });
     }
 
-
     async function displayCuratedRecommendations() {
-        // (Keep existing card creation logic from previous version)
         if (!recommendationContainer) return;
         const spinner = recommendationContainer.querySelector('.spinner-container');
 
         if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY') {
-             if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">TMDB API Key needed.</p>';
+             if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">TMDB API Key needed for recommendations.</p>';
             return;
         }
         if (movieTitlesFromRecTxt.length === 0) {
-            if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">Rec list empty.</p>';
+            if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">Your recommendation list is empty.</p>';
             return;
         }
 
-        recommendationContainer.innerHTML = '';
+        recommendationContainer.innerHTML = ''; // Clear before adding cards
         let fetchedCount = 0;
 
         for (const titleQuery of movieTitlesFromRecTxt) {
@@ -251,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const year = releaseDate ? new Date(releaseDate).getFullYear() : 'N/A';
                 const rating = itemData.vote_average ? itemData.vote_average.toFixed(1) : 'N/A';
                 const posterPath = itemData.poster_path ? TMDB_IMG_URL + itemData.poster_path : 'https://via.placeholder.com/220x330.png?text=No+Image';
-                
+
                 const card = document.createElement('div');
                 card.classList.add('recommendation-card');
                 card.setAttribute('data-id', itemData.id);
@@ -277,35 +296,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 recommendationContainer.appendChild(card);
             }
         }
-        if(spinner) spinner.remove();
+        if (spinner) spinner.remove(); // Remove spinner AFTER cards are added
 
         if (fetchedCount === 0 && movieTitlesFromRecTxt.length > 0) {
-            recommendationContainer.innerHTML = '<p class="api-message">Could not fetch details. Check console.</p>';
+            recommendationContainer.innerHTML = '<p class="api-message">Could not fetch details for the titles in your list. Check console.</p>';
         }
         if (fetchedCount > 0) {
             showNotification(`${fetchedCount} recommendations loaded!`);
-            startCuratedAutoScroll(); // Start auto-scroll after cards are loaded
+            // Ensure container has scrollable content before starting auto-scroll
+            if (recommendationContainer.children.length > 0 && recommendationContainer.scrollWidth > recommendationContainer.clientWidth) {
+                userManuallyScrolled = false; // Reset flag
+                startCuratedAutoScroll(true);
+            }
         }
     }
 
-
     // --- Movie Details Modal Logic ---
-    // (Keep existing code from previous version)
     MicroModal.init({
-        awaitCloseAnimation: true,
-        onShow: (modal) => { document.body.classList.add('modal-open-no-scroll'); },
+        awaitCloseAnimation: true, // Optional
+        onShow: (modal) => {
+             document.body.classList.add('modal-open-no-scroll');
+        },
         onClose: (modal) => {
-            modalContent.innerHTML = '<div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>';
+            modalContent.innerHTML = '<div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>'; // Reset for next open
             document.body.classList.remove('modal-open-no-scroll');
         }
     });
-    async function populateModal(itemId, itemType) { /* ... */
-        modalContent.innerHTML = '<div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>';
+
+    async function populateModal(itemId, itemType) {
+        modalContent.innerHTML = '<div class="spinner-container modal-spinner"><div class="spinner"></div><p>Loading details...</p></div>'; // Show spinner
         MicroModal.show('movieDetailModal');
 
         const details = await getItemDetails(itemId, itemType);
         if (!details) {
-            modalContent.innerHTML = "<p class='api-message'>Sorry, couldn't load details.</p>";
+            modalContent.innerHTML = "<p class='api-message'>Sorry, couldn't load details for this item.</p>";
             modalTitleElem.textContent = "Error";
             return;
         }
@@ -326,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (details.videos && details.videos.results && details.videos.results.length > 0) {
             const officialTrailer = details.videos.results.find(v => v.type === "Trailer" && v.site === "YouTube" && v.official) ||
                                    details.videos.results.find(v => v.type === "Trailer" && v.site === "YouTube") ||
-                                   details.videos.results.find(v => v.site === "YouTube");
+                                   details.videos.results.find(v => v.site === "YouTube"); // Fallback to any YouTube video
             if (officialTrailer) {
                 trailerHTML = `<div class="trailer-container"><iframe src="https://www.youtube.com/embed/${officialTrailer.key}" allowfullscreen loading="lazy"></iframe></div>`;
             }
@@ -366,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <h3>Trailer</h3>
                 ${trailerHTML}
-                
+
                 <div style="margin-top: calc(var(--spacing-unit) * 2);">
                     ${imdbLinkHTML}
                     <a href="https://www.themoviedb.org/${itemType}/${itemId}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary detail-tmdb-link">View on TMDB</a>
@@ -374,7 +398,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
     }
-    document.body.addEventListener('click', function(event) { /* ... */
+
+    // Event listener for opening modal (delegated)
+    document.body.addEventListener('click', function(event) {
         const targetButton = event.target.closest('.open-modal-btn, .recommendation-card, .card-poster-link');
         if (targetButton) {
             event.preventDefault();
@@ -385,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    document.body.addEventListener('keydown', function(event) { /* ... */
+     document.body.addEventListener('keydown', function(event) {
         const targetCard = event.target.closest('.recommendation-card');
         if (targetCard && (event.key === 'Enter' || event.key === ' ')) {
             event.preventDefault();
@@ -398,45 +424,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    // --- FAQ Accordion Logic --- (FIXED)
+    // --- FAQ Accordion Logic ---
     const faqItems = document.querySelectorAll('.faq-item');
     faqItems.forEach(item => {
         const questionButton = item.querySelector('.faq-question');
         const answerDiv = item.querySelector('.faq-answer');
 
         if (questionButton && answerDiv) {
-            // Ensure unique IDs for aria-controls if not already set, and set aria-labelledby for answer.
-            // This part is already done in HTML now using faq-answer-1 etc.
-            // answerDiv.id = questionButton.getAttribute('aria-controls');
-            // answerDiv.setAttribute('aria-labelledby', questionButton.id); // This would require question to have ID
-
             questionButton.addEventListener('click', () => {
                 const isExpanded = questionButton.getAttribute('aria-expanded') === 'true';
-                
-                // Toggle the current question
                 questionButton.setAttribute('aria-expanded', !isExpanded);
-                answerDiv.setAttribute('aria-hidden', isExpanded); // If isExpanded was true, answer is now hidden (isExpanded = false)
-
-                // Optional: Close other FAQ items when one is opened
-                // faqItems.forEach(otherItem => {
-                //     if (otherItem !== item) {
-                //         otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-                //         otherItem.querySelector('.faq-answer').setAttribute('aria-hidden', 'true');
-                //     }
-                // });
+                answerDiv.setAttribute('aria-hidden', isExpanded);
             });
         }
     });
 
 
     // --- To-Do List Logic (Watchlist) ---
-    // (Keep existing code from previous version)
     const todoInput = document.getElementById('todoInput');
     const addTodoButton = document.getElementById('addTodoButton');
     const todoListUL = document.getElementById('todoList');
     let todos = JSON.parse(localStorage.getItem('todos')) || [];
-    function saveTodos() { localStorage.setItem('todos', JSON.stringify(todos)); }
-    function renderTodos() { /* ... */
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    function renderTodos() {
         if (!todoListUL) return;
         todoListUL.innerHTML = '';
         if(todos.length === 0) {
@@ -461,8 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
             todoListUL.appendChild(li);
         });
     }
-    function handleAddTask() { /* ... */
-         if (!todoInput) return;
+
+    function handleAddTask() {
+        if (!todoInput) return;
         const taskText = todoInput.value.trim();
         if (taskText === '') {
             showNotification('Item name cannot be empty!', 2000);
@@ -475,7 +490,8 @@ document.addEventListener('DOMContentLoaded', function() {
         todoInput.value = '';
         todoInput.focus();
     }
-    if (addTodoButton && todoInput && todoListUL) { /* ... */
+
+    if (addTodoButton && todoInput && todoListUL) {
         addTodoButton.addEventListener('click', handleAddTask);
         todoInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') { event.preventDefault(); handleAddTask(); }
@@ -484,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
         todoListUL.addEventListener('click', (event) => {
             const target = event.target;
             const li = target.closest('li');
-            if (!li || !li.dataset.index) return;
+            if (!li || !li.dataset.index) return; // Ensure it's a valid task li
 
             const index = parseInt(li.dataset.index);
 
@@ -492,11 +508,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const removedTodo = todos.splice(index, 1);
                 saveTodos();
                 renderTodos();
-                if (removedTodo.length > 0) showNotification(`"${removedTodo[0].text.substring(0,20)}..." removed.`, 2000);
-            } else {
+                if (removedTodo.length > 0) showNotification(`"${removedTodo[0].text.substring(0,20)}..." removed from watchlist.`, 2000);
+            } else { // Click on li itself (not remove button)
                 todos[index].completed = !todos[index].completed;
                 saveTodos();
-                renderTodos();
+                renderTodos(); // Re-render to apply/remove 'completed' class
                 showNotification(`Watchlist item status updated.`, 1500);
             }
         });
@@ -505,16 +521,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Footer Current Year ---
     const currentYearSpan = document.getElementById('currentYear');
-    if (currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
+    if (currentYearSpan) {
+        currentYearSpan.textContent = new Date().getFullYear();
+    }
 
     // --- Initializations ---
     async function initializePage() {
         showNotification("Welcome to Vis Recommendations!", 2500);
-        renderTodos();
+        renderTodos(); // Load watchlist first
         await displaySpotlightRecommendation();
-        await displayCuratedRecommendations(); // This will now also start auto-scroll if items load
+        await displayCuratedRecommendations(); // This will now also attempt to start auto-scroll
     }
 
     initializePage();
 
-});
+}); // End of DOMContentLoaded
