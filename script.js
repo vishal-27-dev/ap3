@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let curatedScrollRequestID;
     let isCuratedPaused = false;
     let lastFrameTime = 0;
-    const SCROLL_SPEED_PIXELS_PER_SECOND = 75; // Sane default for visible cards
+    const SCROLL_SPEED_PIXELS_PER_SECOND = 200; // Sane default for visible cards
 
     let manualScrollTimeout;
 
