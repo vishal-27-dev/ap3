@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "Fight Club", "Forrest Gump", "The Shawshank Redemption",
         "Parasite", "Mirzapur", "Sacred Games", "K.G.F: Chapter 2", "Pushpa: The Rise",
         "Gladiator", "The Matrix", "Spirited Away", "The Godfather", "The Lion King", "Avengers: Endgame",
-        "Spiderman: No Way Home", "Dune", "Tenet", "Joker" // Added more for robust testing
+        "Spider-Man: No Way Home", "Dune", "Tenet", "Joker" // Corrected Spiderman
     ];
 
     const spotlightSection = document.getElementById('spotlight-section');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalTitleElem = document.getElementById('modalTitle');
 
     // --- Helper: Display Notification ---
-    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationPanel = document.getElementById('notificationPanel'); /* ... (same as before) ... */
     const notificationMessage = document.getElementById('notificationMessage');
     const closeNotificationBtn = notificationPanel.querySelector('.close-notification');
     let notificationTimeout;
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Display Spotlight Recommendation ---
-    async function displaySpotlightRecommendation() { /* ... (same as before) ... */
+    async function displaySpotlightRecommendation() { /* ... (same as before, with --card-bg-color-rgb fix) ... */
         if (!spotlightSection || movieTitlesFromRecTxt.length === 0) {
             if (spotlightSection) spotlightSection.innerHTML = '<p class="api-message">No items for spotlight.</p>';
             return;
@@ -136,54 +136,65 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>`;
             const currentCardBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg-color').trim();
-            let cardBgRgb = '24,24,24';
-            if (currentCardBgColor.startsWith('#')) { const r = parseInt(currentCardBgColor.slice(1, 3), 16); const g = parseInt(currentCardBgColor.slice(3, 5), 16); const b = parseInt(currentCardBgColor.slice(5, 7), 16); cardBgRgb = `${r},${g},${b}`; }
-            else if (currentCardBgColor.startsWith('rgb')) { cardBgRgb = currentCardBgColor.match(/\d+/g).join(','); }
+            let cardBgRgb = '24,24,24'; // Default dark
+            if (currentCardBgColor.startsWith('#')) {
+                 const r = parseInt(currentCardBgColor.slice(1, 3), 16); const g = parseInt(currentCardBgColor.slice(3, 5), 16); const b = parseInt(currentCardBgColor.slice(5, 7), 16);
+                 cardBgRgb = `${r},${g},${b}`;
+            } else if (currentCardBgColor.startsWith('rgb')) { cardBgRgb = currentCardBgColor.match(/\d+/g).join(','); }
             const spotlightCardElement = spotlightSection.querySelector('.spotlight-card');
             if(spotlightCardElement) spotlightCardElement.style.setProperty('--card-bg-color-rgb', cardBgRgb);
         } else { spotlightSection.innerHTML = `<p class="api-message">Could not load spotlight for "${spotlightTitle}".</p>`; }
     }
 
-    // --- Display Curated Recommendations List & AUTO SCROLL (Improved) ---
+    // --- Display Curated Recommendations List & AUTO SCROLL (SMOOTHER & FASTER) ---
     let curatedScrollRequestID;
-    let isCuratedHovering = false;
-    let isCuratedManuallyScrolling = false; // To detect user's manual scroll
-    let manualScrollTimeout;
-    const SCROLL_SPEED_PIXELS_PER_SECOND = 1024; // Adjust for desired speed (e.g., 50px/sec)
+    let isCuratedPaused = false; // General pause flag (hover or manual scroll)
     let lastFrameTime = 0;
+    // SPEED: Higher value = faster. Represents pixels scrolled per second.
+    // A speed where a card (approx 220px wide) is visible for 2-3 seconds.
+    // If a card is 220px wide, and we want it on screen for ~3 seconds: 220px / 3s = ~73px/s.
+    // If we want it on screen for ~2 seconds: 220px / 2s = 110px/s.
+    const SCROLL_SPEED_PIXELS_PER_SECOND = 90; // Adjusted speed
+    let manualScrollTimeout;
 
     function curatedAutoScrollStep(timestamp) {
-        if (!recommendationContainer || isCuratedHovering || isCuratedManuallyScrolling) {
-            curatedScrollRequestID = requestAnimationFrame(curatedAutoScrollStep); // Keep checking if paused
-            lastFrameTime = timestamp; // Reset lastFrameTime when paused
+        if (!recommendationContainer || !curatedScrollRequestID) return; // Stop if not needed
+
+        if (isCuratedPaused) {
+            lastFrameTime = timestamp; // Reset time when paused so delta is fresh on resume
+            curatedScrollRequestID = requestAnimationFrame(curatedAutoScrollStep);
             return;
         }
 
-        if (lastFrameTime === 0) { // First frame after resuming/starting
+        if (lastFrameTime === 0) { // Initialize lastFrameTime on the first unpaused frame
             lastFrameTime = timestamp;
             curatedScrollRequestID = requestAnimationFrame(curatedAutoScrollStep);
             return;
         }
 
-        const deltaTime = (timestamp - lastFrameTime) / 1000; // Time difference in seconds
+        const deltaTime = (timestamp - lastFrameTime) / 1000; // Time in seconds
         lastFrameTime = timestamp;
         const scrollAmount = SCROLL_SPEED_PIXELS_PER_SECOND * deltaTime;
 
-        if (recommendationContainer.scrollLeft + recommendationContainer.clientWidth >= recommendationContainer.scrollWidth - 1) { // -1 for subpixel precision
-            // Reached the end, instantly jump to the beginning for a loop illusion
-            recommendationContainer.scrollLeft = 0;
-        } else {
-            recommendationContainer.scrollLeft += scrollAmount;
+        recommendationContainer.scrollLeft += scrollAmount;
+
+        // Loop condition: if scrolled past the end (or very near it)
+        // scrollWidth includes all content; clientWidth is the visible area.
+        // When scrollLeft + clientWidth >= scrollWidth, we've reached the end.
+        if (recommendationContainer.scrollLeft + recommendationContainer.clientWidth >= recommendationContainer.scrollWidth -1) { // -1 for buffer
+            recommendationContainer.scrollLeft = 0; // Jump to start for loop effect
+            // If content is shorter than container, this condition might not trigger right.
+            // But startCuratedAutoScroll checks scrollWidth > clientWidth before starting.
         }
         curatedScrollRequestID = requestAnimationFrame(curatedAutoScrollStep);
     }
 
     function startCuratedAutoScroll() {
-        if (curatedScrollRequestID) { // Already running or requested
-            return;
+        if (curatedScrollRequestID || !recommendationContainer || recommendationContainer.scrollWidth <= recommendationContainer.clientWidth) {
+            return; // Already running or not scrollable
         }
-        lastFrameTime = 0; // Reset for new start
-        isCuratedManuallyScrolling = false; // Ensure it's not stuck from a previous manual scroll
+        isCuratedPaused = false;
+        lastFrameTime = 0; // Reset for a fresh start
         curatedScrollRequestID = requestAnimationFrame(curatedAutoScrollStep);
     }
 
@@ -192,31 +203,35 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelAnimationFrame(curatedScrollRequestID);
             curatedScrollRequestID = null;
         }
+        isCuratedPaused = true; // Mark as paused even if stopped explicitly
     }
 
     if (recommendationContainer) {
         recommendationContainer.addEventListener('mouseenter', () => {
-            isCuratedHovering = true;
-            // stopCuratedAutoScroll(); // Option to stop immediately
+            isCuratedPaused = true;
         });
 
         recommendationContainer.addEventListener('mouseleave', () => {
-            isCuratedHovering = false;
-            // No need to explicitly call start, the animation loop will resume
+            isCuratedPaused = false;
+            // The animation loop will pick up isCuratedPaused being false on its next check
+            // No need to explicitly call startCuratedAutoScroll() here unless curatedScrollRequestID was cancelled.
+            // To be safe and handle cases where it might have been stopped:
+            if (!curatedScrollRequestID && (recommendationContainer.scrollWidth > recommendationContainer.clientWidth)) {
+                startCuratedAutoScroll();
+            }
         });
 
-        // Handle user manually scrolling the container
-        recommendationContainer.addEventListener('scroll', () => {
-            if (!isCuratedHovering) { // Only if not paused by hover
-                // A scroll event means the scrollLeft changed. If the animation loop is also running,
-                // this scroll event could be from the animation itself or the user.
-                // We'll set a flag and use a timeout to determine if user stopped scrolling.
-                isCuratedManuallyScrolling = true;
+        recommendationContainer.addEventListener('scroll', (event) => {
+             // Only react if user interaction is likely the cause
+            if (event.isTrusted) { // User-initiated scroll
+                isCuratedPaused = true; // Pause auto-scroll
                 clearTimeout(manualScrollTimeout);
                 manualScrollTimeout = setTimeout(() => {
-                    isCuratedManuallyScrolling = false;
-                    // No need to explicitly call start, the animation loop will resume checking
-                }, 2000); // Resume auto-scroll if no manual scroll for 2 seconds
+                    isCuratedPaused = false; // Resume after a delay
+                     if (!curatedScrollRequestID && (recommendationContainer.scrollWidth > recommendationContainer.clientWidth)) {
+                         startCuratedAutoScroll(); // Restart if it was fully stopped
+                     }
+                }, 2500); // Resume after 2.5s of no manual scroll
             }
         }, { passive: true });
     }
@@ -226,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const spinner = recommendationContainer.querySelector('.spinner-container');
 
         if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY') { /* ... (same as before) ... */
-             if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">TMDB API Key needed.</p>';
+            if(spinner) spinner.parentElement.innerHTML = '<p class="api-message">TMDB API Key needed.</p>';
             return;
         }
         if (movieTitlesFromRecTxt.length === 0) { /* ... (same as before) ... */
@@ -234,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        stopCuratedAutoScroll(); // Stop any existing scroll before reloading
+        stopCuratedAutoScroll(); // Stop existing scroll if any before reloading content
         recommendationContainer.innerHTML = '';
         let fetchedCount = 0;
 
@@ -269,7 +284,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fetchedCount > 0) {
             showNotification(`${fetchedCount} recommendations loaded!`);
             if (recommendationContainer.children.length > 0 && recommendationContainer.scrollWidth > recommendationContainer.clientWidth) {
-                startCuratedAutoScroll();
+                // A slight delay before starting can sometimes help if the DOM isn't fully "settled"
+                setTimeout(startCuratedAutoScroll, 100);
             }
         }
     }
