@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
 
     // --- TMDB API Configuration ---
     const TMDB_API_KEY = '929d161540da6a455e07eb90318d6f42'; // <-- REPLACE WITH YOUR ACTUAL TMDB API KEY
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // A speed where a card (approx 220px wide) is visible for 2-3 seconds.
     // If a card is 220px wide, and we want it on screen for ~3 seconds: 220px / 3s = ~73px/s.
     // If we want it on screen for ~2 seconds: 220px / 2s = 110px/s.
-    const SCROLL_SPEED_PIXELS_PER_SECOND = 90; // Adjusted speed
+    const SCROLL_SPEED_PIXELS_PER_SECOND = 9000; // Adjusted speed
     let manualScrollTimeout;
 
     function curatedAutoScrollStep(timestamp) {
