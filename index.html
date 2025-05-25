@@ -10,36 +10,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="page-container"> <!-- For CSS Grid layout -->
+    <div class="page-container">
 
         <header>
             <h1>Vis Recommendations</h1>
+            <div class="header-controls">
+                <button id="themeToggleBtn" aria-label="Toggle theme">🌙</button>
+            </div>
         </header>
 
-        <!-- Task: Image Carousel Section -->
+        <!-- Image Carousel Section -->
         <section id="image-carousel-section" class="content-block">
             <h2>Featured Highlights</h2>
             <div class="carousel-container">
                 <div class="carousel-slides">
                     <!-- Slides will be injected by JavaScript -->
+                     <div class="spinner-container"><div class="spinner"></div><p>Loading highlights...</p></div>
                 </div>
-                <button class="carousel-btn prev-btn" aria-label="Previous slide">❮</button>
-                <button class="carousel-btn next-btn" aria-label="Next slide">❯</button>
+                <button class="carousel-btn prev-btn" aria-label="Previous slide" style="display:none;">❮</button>
+                <button class="carousel-btn next-btn" aria-label="Next slide" style="display:none;">❯</button>
                 <div class="carousel-dots">
                     <!-- Dots will be injected by JavaScript -->
                 </div>
             </div>
         </section>
 
-        <!-- Wrapper for Horizontal Scrolling (Dynamic Recommendations) -->
+        <!-- Dynamic Recommendations Section -->
         <div class="scroll-wrapper">
+            <h2>Curated For You (from your list)</h2>
             <main id="recommendationContainer" class="recommendation-container scrollable">
-                <!-- Movie/Show recommendations will be loaded here by JavaScript from an API -->
-                <p class="loading-message">Loading recommendations...</p>
+                <div class="spinner-container full-width-spinner"><div class="spinner"></div><p>Loading your recommendations...</p></div>
+                <!-- Movie/Show recommendations will be loaded here -->
             </main>
         </div>
 
-        <!-- Task 2: Contact Form Section -->
+        <!-- Contact Form Section -->
         <section id="contact-section" class="content-block">
             <h2>Contact Us</h2>
             <form id="contactForm" novalidate>
@@ -68,7 +73,7 @@
             <p id="formSuccessMessage" class="success-message" style="display:none;"></p>
         </section>
 
-        <!-- Task 2: Dynamic To-Do List Section -->
+        <!-- Dynamic To-Do List Section -->
         <section id="todo-section" class="content-block">
             <h2>My To-Do List</h2>
             <div class="todo-input-area">
@@ -81,9 +86,16 @@
         </section>
 
         <footer>
-            <p>© 2025 Vis Recommendations - Your Source for Bollywood Hits. Designed by <a href="https://github.com/vishal-27-dev">Vishal-Kumar-Rajak</a></p>
+            <p>© <span id="currentYear"></span> Vis Recommendations - Your Source for Cinematic Hits. Designed by <a href="https://github.com/vishal-27-dev" target="_blank" rel="noopener noreferrer">Vishal-Kumar-Rajak</a></p>
         </footer>
+
     </div> <!-- end of .page-container -->
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="notification-panel">
+        <p id="notificationMessage"></p>
+        <button class="close-notification" aria-label="Close notification">×</button>
+    </div>
 
     <script src="script.js"></script>
 </body>
